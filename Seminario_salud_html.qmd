@@ -1,9 +1,7 @@
 ---
 title: "Graficos_interactivos"
 author: "Carmen Lancho Martín - DSLAB"
-output: 
-  html_document:
-    self_contained: false
+format: html
 editor: visual
 ---
 
