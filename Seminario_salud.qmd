@@ -10,9 +10,12 @@ format:
     author-title: "Autor"
 ---
 
-```{r}
-library(mlbench)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
 
+```{r warning=FALSE}
+library(mlbench)
 ```
 
 ## Introducción
@@ -35,7 +38,7 @@ Este conjunto de datos contiene resultados de pruebas de diabetes recogidos por 
 
 El objetivo del conjunto de datos es predecir diagnósticamente si un paciente tiene o no diabetes, basándose en determinadas mediciones diagnósticas incluidas en el conjunto de datos. En esta versión del conjunto de datos, los valores anormales (como presión sanguínea de 0) se han puesto a NA (valor perdido).
 
-```{r}
+```{r warning=FALSE}
 data("PimaIndiansDiabetes2", package = "mlbench")
 datos <- PimaIndiansDiabetes2
 dim(datos)
@@ -63,19 +66,19 @@ El conjunto de datos cuenta con 768 observaciones y las siguientes 9 variables:
 
 Veamos el formato de las variables:
 
-```{r}
+```{r warning=FALSE}
 str(datos)
 ```
 
 Algunas observaciones:
 
-```{r}
+```{r warning=FALSE}
 head(datos)
 ```
 
 Y un pequeño resumen inicial:
 
-```{r}
+```{r warning=FALSE}
 summary(datos)
 ```
 
@@ -85,14 +88,14 @@ Primero, vamos a empezar con la creación de gráficos básicos usando las funci
 
 **Diagrama de barras**
 
-```{r}
+```{r warning=FALSE}
 tabla_frecuencias <- table(datos$diabetes)
 barplot(tabla_frecuencias, col = "lightblue")
 ```
 
 Vamos a añadirle algunos detalles:
 
-```{r}
+```{r warning=FALSE}
 barplot(tabla_frecuencias,
         main = "Diagrama de barras de diabetes",
         ylab = 'Frecuencia',
@@ -112,11 +115,11 @@ Explicación:
 
 Más información: <https://r-charts.com/es/distribucion/funcion-boxplot/>
 
-```{r}
+```{r warning=FALSE}
 boxplot(datos$glucose, horizontal = TRUE)
 ```
 
-```{r}
+```{r warning=FALSE}
 boxplot(glucose ~ pregnant, data = datos, 
         col = rainbow(max(datos$pregnant)),
         main = 'Boxplot de glucosa en función del número de embarazos')
@@ -124,11 +127,11 @@ boxplot(glucose ~ pregnant, data = datos,
 
 **Diagrama de dispersión**
 
-```{r}
+```{r warning=FALSE}
 plot(datos$glucose,datos$insulin)
 ```
 
-```{r}
+```{r warning=FALSE}
 # Definición de colores
 colores <- c("neg" = "maroon3", "pos" = "lightskyblue")
 # Crea el gráfico
@@ -153,7 +156,7 @@ legend("topright",                          # Ubicación de la leyenda
 
 **Diagrama de barras con `ggplot2`:**
 
-```{r}
+```{r warning=FALSE}
 # Cargar librería
 library(ggplot2)
 
@@ -187,7 +190,7 @@ Explicación:
 
 `ggplotly(p)` convierte un gráfico estático de ggplot2 en un gráfico interactivo
 
-```{r}
+```{r warning=FALSE}
 library(plotly)
 ggplotly(diag_barr_gg, tooltip = c("x", "y"))
 ```
@@ -196,7 +199,7 @@ Con tooltip aclaramos lo que queremos que muestre el gráfico al pasar el ratón
 
 **Boxplot con `ggplot2`:**
 
-```{r}
+```{r warning=FALSE}
 boxplot_gg <- ggplot(datos, aes(x=glucose)) + 
   geom_boxplot(fill = 'purple',alpha=0.2) +
   labs(title = "Boxplot de glucosa",
@@ -219,7 +222,7 @@ boxplot_pregnant_gg <- ggplot(datos, aes(x=as.factor(pregnant), y=glucose, fill 
 boxplot_pregnant_gg
 ```
 
-```{r}
+```{r warning=FALSE}
 ggplotly(boxplot_pregnant_gg)
 ```
 
@@ -235,7 +238,7 @@ scatter_gg <- ggplot(datos, aes(y=insulin, x=glucose, color=diabetes, shape=diab
 scatter_gg
 ```
 
-```{r}
+```{r warning=FALSE}
 ggplotly(scatter_gg, tooltip = c("x","y"))
 ```
 
@@ -245,7 +248,7 @@ ggplotly(scatter_gg, tooltip = c("x","y"))
 
 **Diagrama de barras con `plotly`:**
 
-```{r}
+```{r warning=FALSE}
 # Cargar librería
 library(plotly)
 
@@ -264,7 +267,7 @@ grafico
 
 Quiero cambiar el texto que aparece:
 
-```{r}
+```{r warning=FALSE}
 
 # Tabla de frecuencias
 tabla <- as.data.frame(tabla_frecuencias)
@@ -284,7 +287,7 @@ grafico
 
 **Boxplot con `plotly`:**
 
-```{r}
+```{r warning=FALSE}
 fig <- plot_ly(datos,y =  ~glucose, type = "box", hoverinfo='y') %>%
   layout(title = 'Boxplot glucosa',
          xaxis = list(title = "", showticklabels = FALSE),
@@ -293,7 +296,7 @@ fig <- plot_ly(datos,y =  ~glucose, type = "box", hoverinfo='y') %>%
 fig
 ```
 
-```{r}
+```{r warning=FALSE}
 fig <- plot_ly(datos,y =  ~pressure, type = "box", hoverinfo='y',
                boxpoints = "all", jitter = 0.5,
         pointpos = -1.8) %>%
@@ -304,7 +307,7 @@ fig <- plot_ly(datos,y =  ~pressure, type = "box", hoverinfo='y',
 fig
 ```
 
-```{r}
+```{r warning=FALSE}
 fig <- plot_ly(datos, y = ~glucose, color = ~as.factor(pregnant), type = "box") %>%
   layout(showlegend = FALSE,
          title = "Boxplot de glucosa en función del número de embarazos",
@@ -317,7 +320,7 @@ fig
 
 **Diagrama de dispersión con `plotly`:**
 
-```{r}
+```{r warning=FALSE}
 fig <- plot_ly(data = datos, x = ~glucose, y = ~insulin, color = ~diabetes,
               colors = c("#CD2990", "lightskyblue"),
               symbol = ~diabetes, symbols = c('x','s'),
@@ -332,7 +335,7 @@ fig
 
 Si además tuviéramos un identificador para cada elemento:
 
-```{r}
+```{r warning=FALSE}
 
 datos$ID <- seq(1,dim(datos)[1],1)
 
