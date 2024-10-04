@@ -8,7 +8,7 @@
 
 <meta name="author" content="Carmen Lancho Martín - DSLAB">
 
-<title>Graficos_interactivos</title>
+<title>Gráficos interactivos en R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -102,17 +102,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="Seminario_salud_files/libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="fullcontent">
+<body>
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Índice</h2>
+   
+  <ul>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción">Introducción</a></li>
+  <li><a href="#gráficos-en-r-base" id="toc-gráficos-en-r-base" class="nav-link" data-scroll-target="#gráficos-en-r-base">Gráficos en R base</a></li>
+  <li><a href="#gráficos-con-ggplot2" id="toc-gráficos-con-ggplot2" class="nav-link" data-scroll-target="#gráficos-con-ggplot2">Gráficos con ggplot2</a></li>
+  <li><a href="#gráficos-interactivos-con-plotly" id="toc-gráficos-interactivos-con-plotly" class="nav-link" data-scroll-target="#gráficos-interactivos-con-plotly">Gráficos interactivos con plotly</a></li>
+  <li><a href="#generar-archivo-html" id="toc-generar-archivo-html" class="nav-link" data-scroll-target="#generar-archivo-html">Generar archivo HTML</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Graficos_interactivos</h1>
+<h1 class="title">Gráficos interactivos en R</h1>
 </div>
 
 
@@ -120,7 +135,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-heading">Autor</div>
     <div class="quarto-title-meta-contents">
              <p>Carmen Lancho Martín - DSLAB </p>
           </div>
@@ -132,65 +147,209 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlbench)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <section id="introducción" class="level2">
 <h2 class="anchored" data-anchor-id="introducción">Introducción</h2>
-<p>En esta charla vamos a explorar cómo crear gráficos en R, comenzando por gráficos básicos en R base, luego avanzaremos hacia gráficos más complejos con <code>ggplot2</code>, y finalmente incorporaremos interactividad con <code>plotly</code>. Al final, generaremos un archivo HTML con todos los gráficos para compartir de forma fácily visual los resultados.</p>
+<p>En este seminario vamos a explorar cómo crear gráficos en R, comenzando por gráficos básicos en R base, luego avanzaremos hacia gráficos más complejos con <code>ggplot2</code>, y finalmente incorporaremos interactividad con <code>plotly</code>. Al final, generaremos un archivo HTML con todos los gráficos para compartir de forma fácil y visual los resultados.</p>
+<section id="en-qué-gráficos-nos-vamos-a-centrar" class="level4">
+<h4 class="anchored" data-anchor-id="en-qué-gráficos-nos-vamos-a-centrar">¿En qué gráficos nos vamos a centrar?</h4>
+<ul>
+<li><p>Diagramas de barras (barplot)</p></li>
+<li><p>Diagramas de cajas y bigotes (boxplots)</p></li>
+<li><p>Gráficos de dispersión (scatterplot)</p></li>
+</ul>
+</section>
+<section id="conjunto-de-datos" class="level4">
+<h4 class="anchored" data-anchor-id="conjunto-de-datos">Conjunto de datos</h4>
+<p>Utilizaremos el dataset <strong>Pima Indians Diabetes</strong> de la librería <a href="https://search.r-project.org/CRAN/refmans/mlbench/html/PimaIndiansDiabetes.html">mlbench</a> de R.</p>
+<p>Este conjunto de datos contiene resultados de pruebas de diabetes recogidos por el Instituto Nacional de Diabetes y Enfermedades Digestivas y Renales de EE.UU. de una población de mujeres de al menos 21 años, de ascendencia india pima y residentes cerca de Phoenix, Arizona.</p>
+<p>El objetivo del conjunto de datos es predecir diagnósticamente si un paciente tiene o no diabetes, basándose en determinadas mediciones diagnósticas incluidas en el conjunto de datos. En esta versión del conjunto de datos, los valores anormales (como presión sanguínea de 0) se han puesto a NA (valor perdido).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"PimaIndiansDiabetes2"</span>, <span class="at">package =</span> <span class="st">"mlbench"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">&lt;-</span> PimaIndiansDiabetes2</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(datos)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 768   9</code></pre>
+</div>
+</div>
+<p>El conjunto de datos cuenta con 768 observaciones y las siguientes 9 variables:</p>
+<ul>
+<li><p>pregnant: Número de embarazos</p></li>
+<li><p>glucose: Concentración plasmática de glucosa (prueba de tolerancia a la glucosa)</p></li>
+<li><p>pressure: Tensión arterial diastólica (mm Hg)</p></li>
+<li><p>triceps: Grosor del pliegue cutáneo del tríceps (mm)</p></li>
+<li><p>insulin: 2-Hour serum insulin (mu U/ml)</p></li>
+<li><p>mass: Índice de masa corporal (peso en kg/(altura en m)^2)</p></li>
+<li><p>pedigree: Función de pedigrí de la diabetes</p></li>
+<li><p>age: Edad (años)</p></li>
+<li><p>diabetes: Factor que indica el resultado de la prueba de diabetes (neg/pos)</p></li>
+</ul>
+<p>Veamos el formato de las variables:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(datos)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   768 obs. of  9 variables:
+ $ pregnant: num  6 1 8 1 0 5 3 10 2 8 ...
+ $ glucose : num  148 85 183 89 137 116 78 115 197 125 ...
+ $ pressure: num  72 66 64 66 40 74 50 NA 70 96 ...
+ $ triceps : num  35 29 NA 23 35 NA 32 NA 45 NA ...
+ $ insulin : num  NA NA NA 94 168 NA 88 NA 543 NA ...
+ $ mass    : num  33.6 26.6 23.3 28.1 43.1 25.6 31 35.3 30.5 NA ...
+ $ pedigree: num  0.627 0.351 0.672 0.167 2.288 ...
+ $ age     : num  50 31 32 21 33 30 26 29 53 54 ...
+ $ diabetes: Factor w/ 2 levels "neg","pos": 2 1 2 1 2 1 2 1 2 2 ...</code></pre>
+</div>
+</div>
+<p>Algunas observaciones:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(datos)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  pregnant glucose pressure triceps insulin mass pedigree age diabetes
+1        6     148       72      35      NA 33.6    0.627  50      pos
+2        1      85       66      29      NA 26.6    0.351  31      neg
+3        8     183       64      NA      NA 23.3    0.672  32      pos
+4        1      89       66      23      94 28.1    0.167  21      neg
+5        0     137       40      35     168 43.1    2.288  33      pos
+6        5     116       74      NA      NA 25.6    0.201  30      neg</code></pre>
+</div>
+</div>
+<p>Y un pequeño resumen inicial:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(datos)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    pregnant         glucose         pressure         triceps     
+ Min.   : 0.000   Min.   : 44.0   Min.   : 24.00   Min.   : 7.00  
+ 1st Qu.: 1.000   1st Qu.: 99.0   1st Qu.: 64.00   1st Qu.:22.00  
+ Median : 3.000   Median :117.0   Median : 72.00   Median :29.00  
+ Mean   : 3.845   Mean   :121.7   Mean   : 72.41   Mean   :29.15  
+ 3rd Qu.: 6.000   3rd Qu.:141.0   3rd Qu.: 80.00   3rd Qu.:36.00  
+ Max.   :17.000   Max.   :199.0   Max.   :122.00   Max.   :99.00  
+                  NA's   :5       NA's   :35       NA's   :227    
+    insulin            mass          pedigree           age        diabetes 
+ Min.   : 14.00   Min.   :18.20   Min.   :0.0780   Min.   :21.00   neg:500  
+ 1st Qu.: 76.25   1st Qu.:27.50   1st Qu.:0.2437   1st Qu.:24.00   pos:268  
+ Median :125.00   Median :32.30   Median :0.3725   Median :29.00            
+ Mean   :155.55   Mean   :32.46   Mean   :0.4719   Mean   :33.24            
+ 3rd Qu.:190.00   3rd Qu.:36.60   3rd Qu.:0.6262   3rd Qu.:41.00            
+ Max.   :846.00   Max.   :67.10   Max.   :2.4200   Max.   :81.00            
+ NA's   :374      NA's   :11                                                </code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="gráficos-en-r-base" class="level2">
-<h2 class="anchored" data-anchor-id="gráficos-en-r-base">Gráficos en R Base</h2>
+<h2 class="anchored" data-anchor-id="gráficos-en-r-base">Gráficos en R base</h2>
 <p>Primero, vamos a empezar con la creación de gráficos básicos usando las funciones incorporadas en R. Usaremos un conjunto de datos sencillo para ilustrar esto.</p>
-<p><strong>Ejemplo de gráfico básico:</strong></p>
+<p><strong>Diagrama de barras</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generar datos</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear gráfico básico en R Base</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y, <span class="at">type =</span> <span class="st">"b"</span>, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">main =</span> <span class="st">"Gráfico básico en R Base"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>tabla_frecuencias <span class="ot">&lt;-</span> <span class="fu">table</span>(datos<span class="sc">$</span>diabetes)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(tabla_frecuencias, <span class="at">col =</span> <span class="st">"lightblue"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="Seminario_salud_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+<p><img src="Seminario_salud_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Vamos a añadirle algunos detalles:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(tabla_frecuencias,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"Diagrama de barras de diabetes"</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">'Frecuencia'</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab=</span><span class="st">'Diabetes'</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend =</span> <span class="fu">rownames</span>(tabla_frecuencias),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">col=</span><span class="fu">c</span>(<span class="st">"maroon3"</span>,<span class="st">"lightskyblue"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Seminario_salud_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Explicación:</p>
 <ul>
-<li><code>plot()</code> es la función básica de R para crear gráficos.</li>
-<li><code>type = "b"</code> indica que queremos líneas y puntos.</li>
+<li><code>barplot()</code> es la función básica de R para crear gráficos de barras.</li>
 <li><code>col = "blue"</code> cambia el color de la línea a azul.</li>
 <li><code>main</code> añade un título al gráfico.</li>
+<li>AÑADIR EXPLICACIONES</li>
 </ul>
+<p><strong>Boxplot</strong></p>
+<p>Más información: <a href="https://r-charts.com/es/distribucion/funcion-boxplot/" class="uri">https://r-charts.com/es/distribucion/funcion-boxplot/</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(datos<span class="sc">$</span>glucose)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Seminario_salud_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(glucose <span class="sc">~</span> diabetes, <span class="at">data =</span> datos, </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">col =</span> <span class="fu">rainbow</span>(<span class="dv">2</span>),</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">'Boxplot de glucosa en función de diabetes'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Seminario_salud_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Diagrama de dispersión</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(datos<span class="sc">$</span>glucose,datos<span class="sc">$</span>insulin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Seminario_salud_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Definición de colores</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>colores <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"neg"</span> <span class="ot">=</span> <span class="st">"maroon3"</span>, <span class="st">"pos"</span> <span class="ot">=</span> <span class="st">"lightskyblue"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Crea el gráfico</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(datos<span class="sc">$</span>glucose, datos<span class="sc">$</span>insulin, </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> colores[datos<span class="sc">$</span>diabetes], <span class="co"># Aplica los colores según el nivel de diabetes</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">16</span>,<span class="dv">17</span>)[datos<span class="sc">$</span>diabetes],                     <span class="co"># Tipo de punto</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Glucosa"</span>,             <span class="co"># Etiqueta del eje x</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Insulina"</span>,            <span class="co"># Etiqueta del eje y</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Gráfico de Glucosa vs Insulina"</span>) <span class="co"># Título del gráfico</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Agrega la leyenda</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>,                          <span class="co"># Ubicación de la leyenda</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">names</span>(colores),             <span class="co"># Nombres de los niveles de diabetes</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> colores,                        <span class="co"># Colores correspondientes</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">16</span>,<span class="dv">17</span>)[datos<span class="sc">$</span>diabetes],   <span class="co"># Tipos de puntos correspondientes</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Diabetes"</span>)                   <span class="co"># Título de la leyenda</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Seminario_salud_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 <section id="gráficos-con-ggplot2" class="level2">
 <h2 class="anchored" data-anchor-id="gráficos-con-ggplot2">Gráficos con ggplot2</h2>
 <p><code>ggplot2</code> es una de las bibliotecas más utilizadas para la creación de gráficos complejos y personalizables. Su sistema de “gramática de gráficos” facilita la creación de gráficos detallados y estilizados. Vamos a usar el conjunto de datos mtcars.</p>
-<p><strong>Ejemplo de gráfico con <code>ggplot2</code>:</strong></p>
+<p><strong>Diagrama de barras con <code>ggplot2</code>:</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar librería</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear gráfico con ggplot2</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(<span class="at">x =</span> wt, <span class="at">y =</span> mpg, <span class="at">color =</span> <span class="fu">factor</span>(cyl))) <span class="sc">+</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Relación entre Peso y Consumo de Combustible"</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Peso (1000 lbs)"</span>, <span class="at">y =</span> <span class="st">"Millas por galón"</span>) <span class="sc">+</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar librería</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear gráfico con ggplot2</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Barplot</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear el barplot</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>diag_barr_gg <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> datos, <span class="fu">aes</span>(<span class="at">x =</span> diabetes)) <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> diabetes)) <span class="sc">+</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"maroon3"</span>, <span class="st">"lightskyblue"</span>))<span class="sc">+</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Diagrama de barras de diabetes"</span>,</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Diabetes"</span>,</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frecuencia"</span>) <span class="sc">+</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>diag_barr_gg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="Seminario_salud_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+<p><img src="Seminario_salud_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Explicación:</p>
 <ul>
-<li><code>ggplot()</code> inicializa el gráfico y <code>aes()</code> define los ejes y las variables.</li>
-<li><code>geom_point()</code> añade puntos al gráfico y define el tamaño de los puntos.</li>
-<li><code>labs()</code> permite añadir títulos y etiquetas a los ejes.</li>
-<li><code>theme_minimal()</code> aplica un estilo simple al gráfico.</li>
+<li><code>ggplot(data = datos, aes(x = diabetes))</code> inicializa el gráfico y define que el eje x representa la variable <code>diabetes</code>.</li>
 </ul>
-</section>
-<section id="gráficos-interactivos-con-plotly" class="level2">
-<h2 class="anchored" data-anchor-id="gráficos-interactivos-con-plotly">Gráficos interactivos con plotly</h2>
-<p><code>plotly</code> permite agregar interactividad a los gráficos, lo que resulta útil para presentaciones y exploración de datos. Convertir gráficos de <code>ggplot2</code> a <code>plotly</code> es fácil.</p>
+<!-- -->
+<ul>
+<li><p><code>geom_bar(aes(fill = diabetes))</code> añade un gráfico de barras y utiliza colores diferentes para cada nivel de diabetes.</p></li>
+<li><p><code>scale_fill_manual(values = c("maroon3", "lightskyblue"))</code> personaliza los colores de las barras según los niveles de diabetes.</p></li>
+<li><p><code>labs(title = "Diagrama de barras de diabetes", x = "Diabetes", y = "Frecuencia")</code> añade un título y etiquetas a los ejes del gráfico.</p></li>
+<li><p><code>theme_minimal()</code> aplica un estilo simple y limpio al gráfico.</p></li>
+</ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar librería</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>
 Attaching package: 'plotly'</code></pre>
@@ -210,18 +369,33 @@ Attaching package: 'plotly'</code></pre>
 
     layout</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear gráfico interactivo</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(<span class="at">x =</span> wt, <span class="at">y =</span> mpg, <span class="at">color =</span> <span class="fu">factor</span>(cyl))) <span class="sc">+</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Gráfico interactivo: Relación entre Peso y Consumo de Combustible"</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Peso (1000 lbs)"</span>, <span class="at">y =</span> <span class="st">"Millas por galón"</span>) <span class="sc">+</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir a gráfico interactivo con plotly</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(diag_barr_gg, <span class="at">tooltip =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="htmlwidget-7fcba7fba3168ae95907" style="width:100%;height:464px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7fcba7fba3168ae95907">{"x":{"data":[{"x":[2.3199999999999998,3.1899999999999999,3.1499999999999999,2.2000000000000002,1.615,1.835,2.4649999999999999,1.9350000000000001,2.1400000000000001,1.5129999999999999,2.7799999999999998],"y":[22.800000000000001,24.399999999999999,22.800000000000001,32.399999999999999,30.399999999999999,33.899999999999999,21.5,27.300000000000001,26,30.399999999999999,21.399999999999999],"text":["wt: 2.320<br />mpg: 22.8<br />factor(cyl): 4","wt: 3.190<br />mpg: 24.4<br />factor(cyl): 4","wt: 3.150<br />mpg: 22.8<br />factor(cyl): 4","wt: 2.200<br />mpg: 32.4<br />factor(cyl): 4","wt: 1.615<br />mpg: 30.4<br />factor(cyl): 4","wt: 1.835<br />mpg: 33.9<br />factor(cyl): 4","wt: 2.465<br />mpg: 21.5<br />factor(cyl): 4","wt: 1.935<br />mpg: 27.3<br />factor(cyl): 4","wt: 2.140<br />mpg: 26.0<br />factor(cyl): 4","wt: 1.513<br />mpg: 30.4<br />factor(cyl): 4","wt: 2.780<br />mpg: 21.4<br />factor(cyl): 4"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(248,118,109,1)","opacity":1,"size":11.338582677165356,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(248,118,109,1)"}},"hoveron":"points","name":"4","legendgroup":"4","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2.6200000000000001,2.875,3.2149999999999999,3.46,3.4399999999999999,3.4399999999999999,2.77],"y":[21,21,21.399999999999999,18.100000000000001,19.199999999999999,17.800000000000001,19.699999999999999],"text":["wt: 2.620<br />mpg: 21.0<br />factor(cyl): 6","wt: 2.875<br />mpg: 21.0<br />factor(cyl): 6","wt: 3.215<br />mpg: 21.4<br />factor(cyl): 6","wt: 3.460<br />mpg: 18.1<br />factor(cyl): 6","wt: 3.440<br />mpg: 19.2<br />factor(cyl): 6","wt: 3.440<br />mpg: 17.8<br />factor(cyl): 6","wt: 2.770<br />mpg: 19.7<br />factor(cyl): 6"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,186,56,1)","opacity":1,"size":11.338582677165356,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(0,186,56,1)"}},"hoveron":"points","name":"6","legendgroup":"6","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[3.4399999999999999,3.5699999999999998,4.0700000000000003,3.73,3.7799999999999998,5.25,5.4240000000000004,5.3449999999999998,3.52,3.4350000000000001,3.8399999999999999,3.8450000000000002,3.1699999999999999,3.5699999999999998],"y":[18.699999999999999,14.300000000000001,16.399999999999999,17.300000000000001,15.199999999999999,10.4,10.4,14.699999999999999,15.5,15.199999999999999,13.300000000000001,19.199999999999999,15.800000000000001,15],"text":["wt: 3.440<br />mpg: 18.7<br />factor(cyl): 8","wt: 3.570<br />mpg: 14.3<br />factor(cyl): 8","wt: 4.070<br />mpg: 16.4<br />factor(cyl): 8","wt: 3.730<br />mpg: 17.3<br />factor(cyl): 8","wt: 3.780<br />mpg: 15.2<br />factor(cyl): 8","wt: 5.250<br />mpg: 10.4<br />factor(cyl): 8","wt: 5.424<br />mpg: 10.4<br />factor(cyl): 8","wt: 5.345<br />mpg: 14.7<br />factor(cyl): 8","wt: 3.520<br />mpg: 15.5<br />factor(cyl): 8","wt: 3.435<br />mpg: 15.2<br />factor(cyl): 8","wt: 3.840<br />mpg: 13.3<br />factor(cyl): 8","wt: 3.845<br />mpg: 19.2<br />factor(cyl): 8","wt: 3.170<br />mpg: 15.8<br />factor(cyl): 8","wt: 3.570<br />mpg: 15.0<br />factor(cyl): 8"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(97,156,255,1)","opacity":1,"size":11.338582677165356,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(97,156,255,1)"}},"hoveron":"points","name":"8","legendgroup":"8","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.762557077625573,"r":7.3059360730593621,"b":40.182648401826491,"l":37.260273972602747},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Gráfico interactivo: Relación entre Peso y Consumo de Combustible","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[1.3174499999999998,5.6195500000000003],"tickmode":"array","ticktext":["2","3","4","5"],"tickvals":[2,3,4,5],"categoryorder":"array","categoryarray":["2","3","4","5"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"Peso (1000 lbs)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[9.2249999999999996,35.074999999999996],"tickmode":"array","ticktext":["10","15","20","25","30","35"],"tickvals":[10,15,20,25,30,35],"categoryorder":"array","categoryarray":["10","15","20","25","30","35"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"Millas por galón","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"factor(cyl)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"51203d22940e":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"51203d22940e","visdat":{"51203d22940e":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-19f48f7642147e146294" style="width:100%;height:464px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-19f48f7642147e146294">{"x":{"data":[{"orientation":"v","width":0.89999999999999991,"base":0,"x":[1],"y":[500],"text":"count: 500<br />diabetes: neg","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(205,41,144,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"neg","legendgroup":"neg","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":0.90000000000000013,"base":0,"x":[2],"y":[268],"text":"count: 268<br />diabetes: pos","type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(135,206,250,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"pos","legendgroup":"pos","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.762557077625573,"r":7.3059360730593621,"b":40.182648401826491,"l":43.105022831050235},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Diagrama de barras de diabetes","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.40000000000000002,2.6000000000000001],"tickmode":"array","ticktext":["neg","pos"],"tickvals":[1,2],"categoryorder":"array","categoryarray":["neg","pos"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"Diabetes","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-25,525],"tickmode":"array","ticktext":["0","100","200","300","400","500"],"tickvals":[0,100,200,300,400,500],"categoryorder":"array","categoryarray":["0","100","200","300","400","500"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"Frecuencia","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"diabetes","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"9ced460e1f85":{"x":{},"fill":{},"type":"bar"}},"cur_data":"9ced460e1f85","visdat":{"9ced460e1f85":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>Con tooltip aclaramos lo que queremos que muestre el gráfico al pasar el ratón. En este caso, al poner (x,y), estamos indicando que queremos que nos muestre información sobre el eje x y el eje y.</p>
+</section>
+<section id="gráficos-interactivos-con-plotly" class="level2">
+<h2 class="anchored" data-anchor-id="gráficos-interactivos-con-plotly">Gráficos interactivos con plotly</h2>
+<p><code>plotly</code> permite agregar interactividad a los gráficos, lo que resulta útil para presentaciones y exploración de datos. Convertir gráficos de <code>ggplot2</code> a <code>plotly</code> es fácil.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar librería</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear gráfico interactivo</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(<span class="at">x =</span> wt, <span class="at">y =</span> mpg, <span class="at">color =</span> <span class="fu">factor</span>(cyl))) <span class="sc">+</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Gráfico interactivo: Relación entre Peso y Consumo de Combustible"</span>,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Peso (1000 lbs)"</span>, <span class="at">y =</span> <span class="st">"Millas por galón"</span>) <span class="sc">+</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Convertir a gráfico interactivo con plotly</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="htmlwidget-3b6251498eb5fb5f84eb" style="width:100%;height:464px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3b6251498eb5fb5f84eb">{"x":{"data":[{"x":[2.3199999999999998,3.1899999999999999,3.1499999999999999,2.2000000000000002,1.615,1.835,2.4649999999999999,1.9350000000000001,2.1400000000000001,1.5129999999999999,2.7799999999999998],"y":[22.800000000000001,24.399999999999999,22.800000000000001,32.399999999999999,30.399999999999999,33.899999999999999,21.5,27.300000000000001,26,30.399999999999999,21.399999999999999],"text":["wt: 2.320<br />mpg: 22.8<br />factor(cyl): 4","wt: 3.190<br />mpg: 24.4<br />factor(cyl): 4","wt: 3.150<br />mpg: 22.8<br />factor(cyl): 4","wt: 2.200<br />mpg: 32.4<br />factor(cyl): 4","wt: 1.615<br />mpg: 30.4<br />factor(cyl): 4","wt: 1.835<br />mpg: 33.9<br />factor(cyl): 4","wt: 2.465<br />mpg: 21.5<br />factor(cyl): 4","wt: 1.935<br />mpg: 27.3<br />factor(cyl): 4","wt: 2.140<br />mpg: 26.0<br />factor(cyl): 4","wt: 1.513<br />mpg: 30.4<br />factor(cyl): 4","wt: 2.780<br />mpg: 21.4<br />factor(cyl): 4"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(248,118,109,1)","opacity":1,"size":11.338582677165356,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(248,118,109,1)"}},"hoveron":"points","name":"4","legendgroup":"4","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2.6200000000000001,2.875,3.2149999999999999,3.46,3.4399999999999999,3.4399999999999999,2.77],"y":[21,21,21.399999999999999,18.100000000000001,19.199999999999999,17.800000000000001,19.699999999999999],"text":["wt: 2.620<br />mpg: 21.0<br />factor(cyl): 6","wt: 2.875<br />mpg: 21.0<br />factor(cyl): 6","wt: 3.215<br />mpg: 21.4<br />factor(cyl): 6","wt: 3.460<br />mpg: 18.1<br />factor(cyl): 6","wt: 3.440<br />mpg: 19.2<br />factor(cyl): 6","wt: 3.440<br />mpg: 17.8<br />factor(cyl): 6","wt: 2.770<br />mpg: 19.7<br />factor(cyl): 6"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,186,56,1)","opacity":1,"size":11.338582677165356,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(0,186,56,1)"}},"hoveron":"points","name":"6","legendgroup":"6","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[3.4399999999999999,3.5699999999999998,4.0700000000000003,3.73,3.7799999999999998,5.25,5.4240000000000004,5.3449999999999998,3.52,3.4350000000000001,3.8399999999999999,3.8450000000000002,3.1699999999999999,3.5699999999999998],"y":[18.699999999999999,14.300000000000001,16.399999999999999,17.300000000000001,15.199999999999999,10.4,10.4,14.699999999999999,15.5,15.199999999999999,13.300000000000001,19.199999999999999,15.800000000000001,15],"text":["wt: 3.440<br />mpg: 18.7<br />factor(cyl): 8","wt: 3.570<br />mpg: 14.3<br />factor(cyl): 8","wt: 4.070<br />mpg: 16.4<br />factor(cyl): 8","wt: 3.730<br />mpg: 17.3<br />factor(cyl): 8","wt: 3.780<br />mpg: 15.2<br />factor(cyl): 8","wt: 5.250<br />mpg: 10.4<br />factor(cyl): 8","wt: 5.424<br />mpg: 10.4<br />factor(cyl): 8","wt: 5.345<br />mpg: 14.7<br />factor(cyl): 8","wt: 3.520<br />mpg: 15.5<br />factor(cyl): 8","wt: 3.435<br />mpg: 15.2<br />factor(cyl): 8","wt: 3.840<br />mpg: 13.3<br />factor(cyl): 8","wt: 3.845<br />mpg: 19.2<br />factor(cyl): 8","wt: 3.170<br />mpg: 15.8<br />factor(cyl): 8","wt: 3.570<br />mpg: 15.0<br />factor(cyl): 8"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(97,156,255,1)","opacity":1,"size":11.338582677165356,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(97,156,255,1)"}},"hoveron":"points","name":"8","legendgroup":"8","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.762557077625573,"r":7.3059360730593621,"b":40.182648401826491,"l":37.260273972602747},"font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Gráfico interactivo: Relación entre Peso y Consumo de Combustible","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[1.3174499999999998,5.6195500000000003],"tickmode":"array","ticktext":["2","3","4","5"],"tickvals":[2,3,4,5],"categoryorder":"array","categoryarray":["2","3","4","5"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"Peso (1000 lbs)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[9.2249999999999996,35.074999999999996],"tickmode":"array","ticktext":["10","15","20","25","30","35"],"tickvals":[10,15,20,25,30,35],"categoryorder":"array","categoryarray":["10","15","20","25","30","35"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.6529680365296811,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"Millas por galón","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498},"title":{"text":"factor(cyl)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"9ced7f46ae86":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"9ced7f46ae86","visdat":{"9ced7f46ae86":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>Explicación:</p>

@@ -1,0 +1,28 @@
+---
+title: "Gráficos interactivos en R"
+author: "Carmen Lancho Martín - DSLAB"
+format:
+  html:
+    css: styles.css
+    toc: true 
+    toc-location: left
+    toc-title: "Índice"
+    author-title: "Autor"
+---
+
+# Introducción
+
+Aquí va la introducción de tu documento.
+
+# Metodología
+
+Descripción de la metodología utilizada.
+
+# Resultados
+
+Presentación de los resultados obtenidos.
+
+# Conclusiones
+
+Reflexiones finales sobre el trabajo realizado.
+

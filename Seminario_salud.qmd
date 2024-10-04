@@ -1,88 +1,358 @@
 ---
-title: "Graficos_interactivos"
+title: "Gráficos interactivos en R"
 author: "Carmen Lancho Martín - DSLAB"
-output: 
-  html_document:
-    self_contained: false
-editor: visual
+format:
+  html:
+    css: styles.css
+    toc: true 
+    toc-location: left
+    toc-title: "Índice"
+    author-title: "Autor"
 ---
+
+```{r}
+library(mlbench)
+
+```
 
 ## Introducción
 
-En esta charla vamos a explorar cómo crear gráficos en R, comenzando por gráficos básicos en R base, luego avanzaremos hacia gráficos más complejos con `ggplot2`, y finalmente incorporaremos interactividad con `plotly`. Al final, generaremos un archivo HTML con todos los gráficos para compartir de forma fácily visual los resultados.
+En este seminario vamos a explorar cómo crear gráficos en R, comenzando por gráficos básicos en R base, luego avanzaremos hacia gráficos más complejos con `ggplot2`, y finalmente incorporaremos interactividad con `plotly`. Al final, generaremos un archivo HTML con todos los gráficos para compartir de forma fácil y visual los resultados.
 
-## Gráficos en R Base
+#### ¿En qué gráficos nos vamos a centrar?
+
+-   Diagramas de barras (barplot)
+
+-   Diagramas de cajas y bigotes (boxplots)
+
+-   Gráficos de dispersión (scatterplot)
+
+#### Conjunto de datos
+
+Utilizaremos el dataset **Pima Indians Diabetes** de la librería [mlbench](https://search.r-project.org/CRAN/refmans/mlbench/html/PimaIndiansDiabetes.html) de R.
+
+Este conjunto de datos contiene resultados de pruebas de diabetes recogidos por el Instituto Nacional de Diabetes y Enfermedades Digestivas y Renales de EE.UU. de una población de mujeres de al menos 21 años, de ascendencia india pima y residentes cerca de Phoenix, Arizona.
+
+El objetivo del conjunto de datos es predecir diagnósticamente si un paciente tiene o no diabetes, basándose en determinadas mediciones diagnósticas incluidas en el conjunto de datos. En esta versión del conjunto de datos, los valores anormales (como presión sanguínea de 0) se han puesto a NA (valor perdido).
+
+```{r}
+data("PimaIndiansDiabetes2", package = "mlbench")
+datos <- PimaIndiansDiabetes2
+dim(datos)
+```
+
+El conjunto de datos cuenta con 768 observaciones y las siguientes 9 variables:
+
+-   pregnant: Número de embarazos
+
+-   glucose: Concentración plasmática de glucosa (prueba de tolerancia a la glucosa)
+
+-   pressure: Tensión arterial diastólica (mm Hg)
+
+-   triceps: Grosor del pliegue cutáneo del tríceps (mm)
+
+-   insulin: 2-Hour serum insulin (mu U/ml)
+
+-   mass: Índice de masa corporal (peso en kg/(altura en m)\^2)
+
+-   pedigree: Función de pedigrí de la diabetes
+
+-   age: Edad (años)
+
+-   diabetes: Factor que indica el resultado de la prueba de diabetes (neg/pos)
+
+Veamos el formato de las variables:
+
+```{r}
+str(datos)
+```
+
+Algunas observaciones:
+
+```{r}
+head(datos)
+```
+
+Y un pequeño resumen inicial:
+
+```{r}
+summary(datos)
+```
+
+## Gráficos en R base
 
 Primero, vamos a empezar con la creación de gráficos básicos usando las funciones incorporadas en R. Usaremos un conjunto de datos sencillo para ilustrar esto.
 
-**Ejemplo de gráfico básico:**
+**Diagrama de barras**
 
 ```{r}
-# Generar datos
-x <- 1:10
-y <- x^2
+tabla_frecuencias <- table(datos$diabetes)
+barplot(tabla_frecuencias, col = "lightblue")
+```
 
-# Crear gráfico básico en R Base
-plot(x, y, type = "b", col = "blue", main = "Gráfico básico en R Base")
+Vamos a añadirle algunos detalles:
+
+```{r}
+barplot(tabla_frecuencias,
+        main = "Diagrama de barras de diabetes",
+        ylab = 'Frecuencia',
+        xlab='Diabetes',
+        legend = rownames(tabla_frecuencias),
+        col=c("maroon3","lightskyblue"))
 ```
 
 Explicación:
 
--   `plot()` es la función básica de R para crear gráficos.
--   `type = "b"` indica que queremos líneas y puntos.
+-   `barplot()` es la función básica de R para crear gráficos de barras.
 -   `col = "blue"` cambia el color de la línea a azul.
 -   `main` añade un título al gráfico.
+-   AÑADIR EXPLICACIONES
+
+**Boxplot**
+
+Más información: <https://r-charts.com/es/distribucion/funcion-boxplot/>
+
+```{r}
+boxplot(datos$glucose, horizontal = TRUE)
+```
+
+```{r}
+boxplot(glucose ~ pregnant, data = datos, 
+        col = rainbow(max(datos$pregnant)),
+        main = 'Boxplot de glucosa en función del número de embarazos')
+```
+
+**Diagrama de dispersión**
+
+```{r}
+plot(datos$glucose,datos$insulin)
+```
+
+```{r}
+# Definición de colores
+colores <- c("neg" = "maroon3", "pos" = "lightskyblue")
+# Crea el gráfico
+plot(datos$glucose, datos$insulin, 
+     col = colores[datos$diabetes], # Aplica los colores según el nivel de diabetes
+     pch = c(16,17)[datos$diabetes],                     # Tipo de punto
+     xlab = "Glucosa",             # Etiqueta del eje x
+     ylab = "Insulina",            # Etiqueta del eje y
+     main = "Gráfico de Glucosa vs Insulina") # Título del gráfico
+
+# Agrega la leyenda
+legend("topright",                          # Ubicación de la leyenda
+       legend = names(colores),             # Nombres de los niveles de diabetes
+       col = colores,                        # Colores correspondientes
+       pch = c(16,17)[datos$diabetes],   # Tipos de puntos correspondientes
+       title = "Diabetes")                   # Título de la leyenda
+```
 
 ## Gráficos con ggplot2
 
 `ggplot2` es una de las bibliotecas más utilizadas para la creación de gráficos complejos y personalizables. Su sistema de "gramática de gráficos" facilita la creación de gráficos detallados y estilizados. Vamos a usar el conjunto de datos mtcars.
 
-**Ejemplo de gráfico con `ggplot2`:**
+**Diagrama de barras con `ggplot2`:**
 
 ```{r}
 # Cargar librería
 library(ggplot2)
 
 # Crear gráfico con ggplot2
-ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) +
-  geom_point(size = 3) +
-  labs(title = "Relación entre Peso y Consumo de Combustible",
-       x = "Peso (1000 lbs)", y = "Millas por galón") +
+# Barplot
+# Crear el barplot
+diag_barr_gg <- ggplot(data = datos, aes(x = diabetes)) +
+  geom_bar(aes(fill = diabetes)) +
+  scale_fill_manual(values=c("maroon3", "lightskyblue"))+
+  labs(title = "Diagrama de barras de diabetes",
+       x = "Diabetes",
+       y = "Frecuencia") +
   theme_minimal()
+diag_barr_gg
 ```
 
 Explicación:
 
--   `ggplot()` inicializa el gráfico y `aes()` define los ejes y las variables.
--   `geom_point()` añade puntos al gráfico y define el tamaño de los puntos.
--   `labs()` permite añadir títulos y etiquetas a los ejes.
--   `theme_minimal()` aplica un estilo simple al gráfico.
+-   `ggplot(data = datos, aes(x = diabetes))` inicializa el gráfico y define que el eje x representa la variable `diabetes`.
+
+```{=html}
+<!-- -->
+```
+-   `geom_bar(aes(fill = diabetes))` añade un gráfico de barras y utiliza colores diferentes para cada nivel de diabetes.
+
+-   `scale_fill_manual(values = c("maroon3", "lightskyblue"))` personaliza los colores de las barras según los niveles de diabetes.
+
+-   `labs(title = "Diagrama de barras de diabetes", x = "Diabetes", y = "Frecuencia")` añade un título y etiquetas a los ejes del gráfico.
+
+-   `theme_minimal()` aplica un estilo simple y limpio al gráfico.
+
+`ggplotly(p)` convierte un gráfico estático de ggplot2 en un gráfico interactivo
+
+```{r}
+library(plotly)
+ggplotly(diag_barr_gg, tooltip = c("x", "y"))
+```
+
+Con tooltip aclaramos lo que queremos que muestre el gráfico al pasar el ratón. En este caso, al poner (x,y), estamos indicando que queremos que nos muestre información sobre el eje x y el eje y.
+
+**Boxplot con `ggplot2`:**
+
+```{r}
+boxplot_gg <- ggplot(datos, aes(x=glucose)) + 
+  geom_boxplot(fill = 'purple',alpha=0.2) +
+  labs(title = "Boxplot de glucosa",
+       x = "Glucosa") +
+  theme_minimal() +
+  theme(axis.text.y = element_blank())  # Quitar el texto del eje y
+boxplot_gg
+```
+
+```{r warning=FALSE}
+library(tidyverse)
+library(viridis)
+boxplot_pregnant_gg <- ggplot(datos, aes(x=as.factor(pregnant), y=glucose, fill =as.factor(pregnant))) + 
+    geom_boxplot(alpha=0.8) + 
+    labs(title = "Boxplot de glucosa en función del número de embarazos",
+       x = "Número de embarazos",y='Glucosa') +
+    scale_fill_viridis_d() + # Usa una paleta de colores de viridis
+  theme_minimal() +
+  theme(legend.position = "none")
+boxplot_pregnant_gg
+```
+
+```{r}
+ggplotly(boxplot_pregnant_gg)
+```
+
+**Diagrama de dispersión con `ggplot2`:**
+
+```{r warning=FALSE}
+scatter_gg <- ggplot(datos, aes(y=insulin, x=glucose, color=diabetes, shape=diabetes)) + 
+    geom_point(size=2.5) + 
+  scale_color_manual(values=c("maroon3", "lightskyblue"))+
+  labs(title = "Diagrama de dispersión insulina vs glucosa",
+       x = "Glucosa",y='Insulina')+
+  theme_minimal()
+scatter_gg
+```
+
+```{r}
+ggplotly(scatter_gg, tooltip = c("x","y"))
+```
 
 ## Gráficos interactivos con plotly
 
-`plotly` permite agregar interactividad a los gráficos, lo que resulta útil para presentaciones y exploración de datos. Convertir gráficos de `ggplot2` a `plotly` es fácil.
+`plotly` permite agregar interactividad a los gráficos, lo que resulta útil para presentaciones y exploración de datos.
+
+**Diagrama de barras con `plotly`:**
 
 ```{r}
 # Cargar librería
 library(plotly)
 
-# Crear gráfico interactivo
-p <- ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) +
-  geom_point(size = 3) +
-  labs(title = "Gráfico interactivo: Relación entre Peso y Consumo de Combustible",
-       x = "Peso (1000 lbs)", y = "Millas por galón") +
-  theme_minimal()
+# Tabla de frecuencias
+tabla <- as.data.frame(tabla_frecuencias)
+colnames(tabla) <- c('diabetes','frecuencia')
 
-# Convertir a gráfico interactivo con plotly
-ggplotly(p)
+# Crear el barplot en Plotly
+grafico <- plot_ly(tabla, x = ~diabetes, y = ~frecuencia, type = 'bar', 
+                   marker = list(color = 'slateblue')) %>%
+  layout(title = "Diagrama de barras de diabetes",
+         xaxis = list(title = "Diabetes"),
+         yaxis = list(title = "Frecuencia"))
+grafico
 ```
 
-Explicación:
+Quiero cambiar el texto que aparece:
 
--   `ggplotly(p)` convierte un gráfico estático de ggplot2 en un gráfico interactivo.
+```{r}
 
-## Generar archivo HTML
+# Tabla de frecuencias
+tabla <- as.data.frame(tabla_frecuencias)
+colnames(tabla) <- c('diabetes','frecuencia')
+texto <- c('Sin diabetes','Con diabetes')
+tabla$texto <- texto
 
-Finalmente, puedes generar un archivo HTML con el siguiente comando en R para compartir los resultados:
+# Crear el barplot en Plotly
+grafico <- plot_ly(tabla, x = ~diabetes, y = ~frecuencia, type = 'bar', 
+                   marker = list(color = c("#CD2990", "lightskyblue")),
+    hovertemplate = paste(tabla$texto, '<br> Frecuencia:', tabla$frecuencia,'<extra></extra>')) %>%
+  layout(title = "Diagrama de barras de diabetes",
+         xaxis = list(title = "Diabetes"),
+         yaxis = list(title = "Frecuencia"))
+grafico
+```
 
-<!-- quarto_render("archivo_quarto.qmd") -->
+**Boxplot con `plotly`:**
+
+```{r}
+fig <- plot_ly(datos,y =  ~glucose, type = "box", hoverinfo='y') %>%
+  layout(title = 'Boxplot glucosa',
+         xaxis = list(title = "", showticklabels = FALSE),
+         yaxis = list(title = 'Glucosa'))
+
+fig
+```
+
+```{r}
+fig <- plot_ly(datos,y =  ~pressure, type = "box", hoverinfo='y',
+               boxpoints = "all", jitter = 0.5,
+        pointpos = -1.8) %>%
+  layout(title = 'Boxplot Presión',
+         xaxis = list(title = "", showticklabels = FALSE),
+         yaxis = list(title = 'Presión'))
+
+fig
+```
+
+```{r}
+fig <- plot_ly(datos, y = ~glucose, color = ~as.factor(pregnant), type = "box") %>%
+  layout(showlegend = FALSE,
+         title = "Boxplot de glucosa en función del número de embarazos",
+         xaxis = list(title = "Número de embarazos",tickvals = 1:max(datos$pregnant)),
+         yaxis = list(title = "Glucosa"))
+
+fig
+
+```
+
+**Diagrama de dispersión con `plotly`:**
+
+```{r}
+fig <- plot_ly(data = datos, x = ~glucose, y = ~insulin, color = ~diabetes,
+              colors = c("#CD2990", "lightskyblue"),
+              symbol = ~diabetes, symbols = c('x','s'),
+               marker = list(size = 8),
+              hovertemplate = paste('<b>Diabetes: </b>', datos$diabetes, 
+                                    '<br> Insulina:', datos$insulin,
+                                    '<br> Glucosa:', datos$glucose,
+                                    '<extra></extra>'))
+
+fig
+```
+
+Si además tuviéramos un identificador para cada elemento:
+
+```{r}
+
+datos$ID <- seq(1,dim(datos)[1],1)
+
+fig <- plot_ly(data = datos, x = ~glucose, y = ~insulin, color = ~diabetes,
+              colors = c("#CD2990", "lightskyblue"),
+              symbol = ~diabetes, symbols = c('x','s'),
+               marker = list(size = 8),
+              hovertemplate = paste('<b>Diabetes: </b>', datos$diabetes, 
+                                    '<br> Insulina:', datos$insulin,
+                                    '<br> Glucosa:', datos$glucose,
+                                    '<br>Paciente ID:', datos$ID,
+                                    '<extra></extra>'))
+
+fig
+```
+
+Más y más y más
+
+-   https://plotly.com/r/
+
+-   https://r-graph-gallery.com/
+
+-   https://r-charts.com/

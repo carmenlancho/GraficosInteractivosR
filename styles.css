@@ -1,0 +1,12 @@
+body {
+    background-color: #F6FCFF; /* Azul muy claro */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #012779; /* Azul más oscuro */
+}
+
+a {
+    color: #001f3f; /* Azul más oscuro para enlaces */
+}
+
