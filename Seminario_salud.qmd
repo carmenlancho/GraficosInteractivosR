@@ -177,9 +177,8 @@ Explicación:
 
 -   `ggplot(data = datos, aes(x = diabetes))` inicializa el gráfico y define que el eje x representa la variable `diabetes`.
 
-```{=html}
 <!-- -->
-```
+
 -   `geom_bar(aes(fill = diabetes))` añade un gráfico de barras y utiliza colores diferentes para cada nivel de diabetes.
 
 -   `scale_fill_manual(values = c("maroon3", "lightskyblue"))` personaliza los colores de las barras según los niveles de diabetes.
@@ -359,3 +358,7 @@ Más y más y más
 -   https://r-graph-gallery.com/
 
 -   https://r-charts.com/
+
+-   https://rpkgs.datanovia.com/ggpubr/ Gráficos ready to publish
+
+-   https://mode.com/blog/r-data-visualization-packages#dygraphs Time series interactivo
