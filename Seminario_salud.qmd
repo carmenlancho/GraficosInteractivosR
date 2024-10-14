@@ -8,14 +8,11 @@ format:
     toc-location: left
     toc-title: "Índice"
     author-title: "Autor"
+    page-layout: article
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-```
-
-```{r warning=FALSE}
-library(mlbench)
 ```
 
 ## Introducción
@@ -29,6 +26,18 @@ En este seminario vamos a explorar cómo crear gráficos en R, comenzando por gr
 -   Diagramas de cajas y bigotes (boxplots)
 
 -   Gráficos de dispersión (scatterplot)
+
+#### Carga de librerías
+
+Comenzamos cargando todas las librerías necesarias:
+
+```{r warning=FALSE}
+library(mlbench)
+library(ggplot2)
+library(plotly)
+library(tidyverse)
+library(viridis)
+```
 
 #### Conjunto de datos
 
@@ -136,18 +145,18 @@ plot(datos$glucose,datos$insulin)
 colores <- c("neg" = "maroon3", "pos" = "lightskyblue")
 # Crea el gráfico
 plot(datos$glucose, datos$insulin, 
-     col = colores[datos$diabetes], # Aplica los colores según el nivel de diabetes
-     pch = c(16,17)[datos$diabetes],                     # Tipo de punto
-     xlab = "Glucosa",             # Etiqueta del eje x
-     ylab = "Insulina",            # Etiqueta del eje y
+     col = colores[datos$diabetes], # Aplica los colores según diabetes
+     pch = c(16,17)[datos$diabetes], # Tipo de punto
+     xlab = "Glucosa", # Etiqueta del eje x
+     ylab = "Insulina",  # Etiqueta del eje y
      main = "Gráfico de Glucosa vs Insulina") # Título del gráfico
 
 # Agrega la leyenda
-legend("topright",                          # Ubicación de la leyenda
-       legend = names(colores),             # Nombres de los niveles de diabetes
-       col = colores,                        # Colores correspondientes
-       pch = c(16,17)[datos$diabetes],   # Tipos de puntos correspondientes
-       title = "Diabetes")                   # Título de la leyenda
+legend("topright",  # Ubicación de la leyenda
+       legend = names(colores), # Nombres de los niveles de diabetes
+       col = colores,  # Colores correspondientes
+       pch = c(16,17)[datos$diabetes], # Tipos de puntos
+       title = "Diabetes") # Título de la leyenda
 ```
 
 ## Gráficos con ggplot2
@@ -157,9 +166,6 @@ legend("topright",                          # Ubicación de la leyenda
 **Diagrama de barras con `ggplot2`:**
 
 ```{r warning=FALSE}
-# Cargar librería
-library(ggplot2)
-
 # Crear gráfico con ggplot2
 # Barplot
 # Crear el barplot
@@ -176,21 +182,14 @@ diag_barr_gg
 Explicación:
 
 -   `ggplot(data = datos, aes(x = diabetes))` inicializa el gráfico y define que el eje x representa la variable `diabetes`.
-
-<!-- -->
-
 -   `geom_bar(aes(fill = diabetes))` añade un gráfico de barras y utiliza colores diferentes para cada nivel de diabetes.
-
 -   `scale_fill_manual(values = c("maroon3", "lightskyblue"))` personaliza los colores de las barras según los niveles de diabetes.
-
 -   `labs(title = "Diagrama de barras de diabetes", x = "Diabetes", y = "Frecuencia")` añade un título y etiquetas a los ejes del gráfico.
-
 -   `theme_minimal()` aplica un estilo simple y limpio al gráfico.
 
 `ggplotly(p)` convierte un gráfico estático de ggplot2 en un gráfico interactivo
 
 ```{r warning=FALSE}
-library(plotly)
 ggplotly(diag_barr_gg, tooltip = c("x", "y"))
 ```
 
@@ -209,11 +208,13 @@ boxplot_gg
 ```
 
 ```{r warning=FALSE}
-library(tidyverse)
-library(viridis)
-boxplot_pregnant_gg <- ggplot(datos, aes(x=as.factor(pregnant), y=glucose, fill =as.factor(pregnant))) + 
+
+boxplot_pregnant_gg <- ggplot(datos, 
+                              aes(x=as.factor(pregnant), 
+                                  y=glucose, 
+                                   fill =as.factor(pregnant))) + 
     geom_boxplot(alpha=0.8) + 
-    labs(title = "Boxplot de glucosa en función del número de embarazos",
+    labs(title = "Boxplot de glucosa en función del nº de embarazos",
        x = "Número de embarazos",y='Glucosa') +
     scale_fill_viridis_d() + # Usa una paleta de colores de viridis
   theme_minimal() +
@@ -228,7 +229,10 @@ ggplotly(boxplot_pregnant_gg)
 **Diagrama de dispersión con `ggplot2`:**
 
 ```{r warning=FALSE}
-scatter_gg <- ggplot(datos, aes(y=insulin, x=glucose, color=diabetes, shape=diabetes)) + 
+scatter_gg <- ggplot(datos, 
+                     aes(y=insulin, x=glucose, 
+                         color=diabetes, 
+                         shape=diabetes)) + 
     geom_point(size=2.5) + 
   scale_color_manual(values=c("maroon3", "lightskyblue"))+
   labs(title = "Diagrama de dispersión insulina vs glucosa",
@@ -248,8 +252,6 @@ ggplotly(scatter_gg, tooltip = c("x","y"))
 **Diagrama de barras con `plotly`:**
 
 ```{r warning=FALSE}
-# Cargar librería
-library(plotly)
 
 # Tabla de frecuencias
 tabla <- as.data.frame(tabla_frecuencias)
@@ -277,7 +279,9 @@ tabla$texto <- texto
 # Crear el barplot en Plotly
 grafico <- plot_ly(tabla, x = ~diabetes, y = ~frecuencia, type = 'bar', 
                    marker = list(color = c("#CD2990", "lightskyblue")),
-    hovertemplate = paste(tabla$texto, '<br> Frecuencia:', tabla$frecuencia,'<extra></extra>')) %>%
+    hovertemplate = paste(tabla$texto, 
+                          '<br> Frecuencia:', tabla$frecuencia,
+                          '<extra></extra>')) %>%
   layout(title = "Diagrama de barras de diabetes",
          xaxis = list(title = "Diabetes"),
          yaxis = list(title = "Frecuencia"))
@@ -307,10 +311,12 @@ fig
 ```
 
 ```{r warning=FALSE}
-fig <- plot_ly(datos, y = ~glucose, color = ~as.factor(pregnant), type = "box") %>%
+fig <- plot_ly(datos, y = ~glucose, color = ~as.factor(pregnant), 
+               type = "box") %>%
   layout(showlegend = FALSE,
-         title = "Boxplot de glucosa en función del número de embarazos",
-         xaxis = list(title = "Número de embarazos",tickvals = 1:max(datos$pregnant)),
+      title = "Boxplot de glucosa en función del número de embarazos",
+         xaxis = list(title = "Número de embarazos",
+                      tickvals = 1:max(datos$pregnant)),
          yaxis = list(title = "Glucosa"))
 
 fig
@@ -320,11 +326,12 @@ fig
 **Diagrama de dispersión con `plotly`:**
 
 ```{r warning=FALSE}
-fig <- plot_ly(data = datos, x = ~glucose, y = ~insulin, color = ~diabetes,
+fig <- plot_ly(data = datos, x = ~glucose, y = ~insulin, 
+               color = ~diabetes,
               colors = c("#CD2990", "lightskyblue"),
               symbol = ~diabetes, symbols = c('x','s'),
                marker = list(size = 8),
-              hovertemplate = paste('<b>Diabetes: </b>', datos$diabetes, 
+            hovertemplate = paste('<b>Diabetes: </b>', datos$diabetes, 
                                     '<br> Insulina:', datos$insulin,
                                     '<br> Glucosa:', datos$glucose,
                                     '<extra></extra>'))
@@ -338,11 +345,12 @@ Si además tuviéramos un identificador para cada elemento:
 
 datos$ID <- seq(1,dim(datos)[1],1)
 
-fig <- plot_ly(data = datos, x = ~glucose, y = ~insulin, color = ~diabetes,
+fig <- plot_ly(data = datos, x = ~glucose, y = ~insulin, 
+               color = ~diabetes,
               colors = c("#CD2990", "lightskyblue"),
               symbol = ~diabetes, symbols = c('x','s'),
                marker = list(size = 8),
-              hovertemplate = paste('<b>Diabetes: </b>', datos$diabetes, 
+            hovertemplate = paste('<b>Diabetes: </b>', datos$diabetes, 
                                     '<br> Insulina:', datos$insulin,
                                     '<br> Glucosa:', datos$glucose,
                                     '<br>Paciente ID:', datos$ID,

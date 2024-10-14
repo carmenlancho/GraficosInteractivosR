@@ -78,9 +78,3 @@ ggplotly(p)
 Explicación:
 
 -   `ggplotly(p)` convierte un gráfico estático de ggplot2 en un gráfico interactivo.
-
-## Generar archivo HTML
-
-Finalmente, puedes generar un archivo HTML con el siguiente comando en R para compartir los resultados:
-
-<!-- quarto_render("archivo_quarto.qmd") -->

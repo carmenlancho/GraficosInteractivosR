@@ -1,0 +1,302 @@
+---
+title: "La importancia de la visualización. Gráficos interactivos en R."
+author: "VII Seminario Análisis de datos avanzado en Ciencias de la Salud"
+date: "15 de octubre de 2024"
+
+format: 
+  beamer: 
+    template: dslab.beamer.tex
+
+editor: visual
+---
+
+# Índice
+
+```{r echo=FALSE}
+#| echo: false
+
+default_chunk_hook  <- knitr::knit_hooks$get("chunk")
+
+latex_font_size <- c("Huge", "huge", "LARGE", "Large", 
+                     "large", "normalsize", "small", 
+                     "footnotesize", "scriptsize", "tiny")
+
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- default_chunk_hook(x, options)
+  if(options$size %in% latex_font_size) {
+    paste0("\n \\", options$size, "\n\n", 
+      x, 
+      "\n\n \\normalsize"
+    )
+  } else {
+    x
+  }
+})
+```
+
+1.  Análisis exploratorio de datos vs análisis descriptivo
+
+2.  Ejemplos de éxitos y fracasos
+
+3.  Gráficos interactivos
+
+# Análisis descriptivo de datos
+
+-   ¿Qué es el análisis descriptivo de datos?
+
+-   ¿Qué herramientas usa?
+
+![](images/koala_descriptivo-01.jpeg){fig-align="center" width="200"}
+
+# Análisis descriptivo de datos
+
+-   ¿Qué es el análisis descriptivo de datos?
+
+-   ¿Qué herramientas usa?
+
+    -   Media, mediana, moda, varianza, etc.
+
+    -   Tablas de frecuencia
+
+    -   Diagramas de barras, boxplot, diagramas de dispersión, etc.
+
+# Análisis exploratorio de datos
+
+::: columns
+::: {.column width="55%"}
+*"Exploratory data analysis can never be the whole story, but nothing else can serve as the foundation stone as the first step"*
+
+\vspace{0.4cm}
+
+*"Exploratory Data Analysis is detective work"* \vspace{0.4cm}
+
+"*The simple graph has brought more information to the data analyst's mind than any other device*" \vspace{0.4cm}
+
+John Tukey
+:::
+
+::: {.column width="45%"}
+![](images/John%20Tukey.jpg){fig-align="center" width="140"}
+:::
+:::
+
+# Visualización
+
+\centering
+
+¿Cuándo realizo visualizaciones?
+
+![](images/koala_analista.jpeg){fig-align="center" width="250"}
+
+**¡Siempre que sea necesario!**
+
+# Ciencia de Datos
+
+![](images/DataScience.png){fig-align="center" width="400"}
+
+# Visualización
+
+-   Entender los datos
+
+-   Descubrir patrones y comportamientos
+
+-   Explicar y transmitir la información que contienen los datos
+
+-   Transparencia e interpretabilidad
+
+-   Resumir información
+
+# Ejemplos
+
+[Estudio natalidad](https://www.eldiario.es/nidos/no-ninos-nacen-toca-dar-luz-semana-21-probable-hacerlo-lunes-viernes_1_6400307.html): https://www.eldiario.es/nidos/no-ninos-nacen-toca-dar-luz-semana-21-probable-hacerlo-lunes-viernes_1\_6400307.html
+
+![](images/paste-91F9D1E2.png){fig-align="center" width="151" height="38"}
+
+![](images/paste-532839E8.png){fig-align="center" width="229"}
+
+# Ejemplos
+
+-   John Alexis Guerra <https://johnguerra.co/>
+
+-   Resultados electorales Colombia: <https://johnguerra.co/viz/resultadosSegundaVuelta2018/>
+
+[![](images/johnalexis_guerra.png){fig-align="center" width="350"}](https://johnguerra.co/projects.html)
+
+# Ejemplos
+
+-   Dashboards COVID
+
+    -   New York Times: <https://www.nytimes.com/interactive/2021/us/covid-cases.html>
+
+    -   Instituto de Salud Carlos III: <https://cnecovid.isciii.es/covid19/>
+
+    -   DSLAB report
+
+    -   Universidad John Hopkins, Ghana Statistical Service, etc.
+
+# Ejemplos
+
+![](images/barras_musica.png){fig-align="right" width="220"} \hspace{1cm} ![](images/donald_trump.jpeg){fig-align="right" width="170"}
+
+# Ejemplos
+
+![](images/elecciones.jpg){fig-align="center" width="404"}
+
+# Gráficos interactivos: Plotly
+
+[![](images/plotly_graphing_library.png){fig-align="center" width="440"}](https://plotly.com/graphing-libraries/)
+
+# Gráficos interactivos: Plotly
+
+Los haremos en R usando la librería *plotly*: <https://plotly.com/r/>
+
+\vspace{1cm}
+
+Dos maneras de hacerlo:
+
+-   *ggplot* --\> añadimos interactividad *ggplotly*
+
+-   directamente en *plotly*
+
+# Diagramas de barras
+
+```{r echo=FALSE,out.width="60%",fig.align = 'center'}
+# Instalar y cargar los paquetes necesarios
+#install.packages("palmerpenguins")
+#install.packages("ggplot2")
+#install.packages("cowplot")  # Para combinar gráficos
+
+library(palmerpenguins)
+library(ggplot2)
+library(cowplot)
+
+# Cargar el conjunto de datos de los pingüinos
+data("penguins")
+
+# Eliminar filas con datos faltantes
+penguins <- na.omit(penguins)
+
+# Gráfico de barras en frecuencia absoluta
+grafico_absoluto <- ggplot(penguins, aes(x = species)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Frecuencia absoluta de especies",
+       x = "Especies", y = "Frecuencia absoluta") +
+  theme_minimal()
+
+# Gráfico de barras en frecuencia relativa
+grafico_relativo <- ggplot(penguins, aes(x = species)) +
+  geom_bar(aes(y = (..count..) / sum(..count..)), fill = "lightgreen", color = "black") +
+  labs(title = "Frecuencia relativa de especies",
+       x = "Especies", y = "Frecuencia relativa") +
+  scale_y_continuous(labels = scales::percent) +  # Convertir la escala en porcentaje
+  theme_minimal()
+
+# Combinar los dos gráficos en una misma figura
+graficos_combinados <- plot_grid(grafico_absoluto, grafico_relativo, labels = c("A", "B"))
+
+# Mostrar la figura combinada
+print(grafico_absoluto)
+```
+
+# **Diagrama de cajas y bigotes (boxplot)**
+
+![](images/boxplot.png){fig-align="center" width="450"}
+
+# Boxplot
+
+```{r echo=FALSE,out.width="80%",fig.align = 'center'}
+# Cargar paquetes necesarios
+library(ggplot2)
+library(palmerpenguins)
+
+# Cargar el conjunto de datos de los pingüinos
+datos <- na.omit(penguins)  # Eliminar valores faltantes en species y bill_length_mm
+
+# Crear el boxplot
+boxplot_longitud_pico <- ggplot(datos, aes(x = species, y = bill_length_mm, fill = species)) +
+  geom_boxplot(color = "black") +
+  scale_fill_manual(values = c("Adelie" = "purple", "Chinstrap" = "orange", "Gentoo" = "lightblue")) +
+  labs(title = "Boxplot de la Longitud del Pico de los Pingüinos por Especie",
+       x = "Especie", y = "Longitud del Pico (mm)") +
+  theme_minimal()
+
+
+
+# Mostrar el boxplot
+print(boxplot_longitud_pico)
+
+```
+
+# Diagramas de dispersión
+
+```{r echo=FALSE,out.width="80%",fig.align = 'center'}
+# Cargar paquetes necesarios
+library(ggplot2)
+library(palmerpenguins)
+
+# Cargar el conjunto de datos de los pingüinos
+datos <- na.omit(penguins)  # Eliminar valores faltantes
+
+
+# Crear el diagrama de dispersión
+dispersion_plot <- ggplot(datos, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point(size = 3) +
+  labs(title = "Diagrama de Dispersión de Longitud vs. Profundidad del Pico de los Pingüinos",
+       x = "Longitud del Pico (mm)", y = "Profundidad del Pico (mm)",
+       color = "Especie") +
+  theme_minimal()
+
+
+# Mostrar la figura
+print(dispersion_plot)
+
+```
+
+# Diagrama de dispersión
+
+```{r echo=FALSE,out.width="80%",fig.align = 'center'}
+# Cargar paquetes necesarios
+library(ggplot2)
+library(palmerpenguins)
+
+# Cargar el conjunto de datos de los pingüinos
+datos <- na.omit(penguins)  # Eliminar valores faltantes
+
+# Crear el diagrama de dispersión
+dispersion_plot_sex <- ggplot(datos, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("Adelie" = "purple", "Chinstrap" = "orange", "Gentoo" = "lightblue")) +
+  labs(title = "Diagrama de Dispersión de Longitud vs. Profundidad del Pico de los Pingüinos",
+       x = "Longitud del Pico (mm)", y = "Profundidad del Pico (mm)",
+       color = "Especie") +
+  theme_minimal()
+
+
+# Mostrar la figura
+print(dispersion_plot_sex)
+
+```
+
+# Enlaces de interés
+
+-   Modern Data Visualization with R <https://rkabacoff.github.io/datavis/>
+
+-   <https://www.data-to-viz.com/>
+
+-   R graph gallery <https://r-graph-gallery.com/>
+
+-   R Gallery book <https://bookdown.org/content/b298e479-b1ab-49fa-b83d-a57c2b034d49/>
+
+-   ¿El mejor gráfico hecho? The Minard map <https://bigthink.com/strange-maps/229-vital-statistics-of-a-deadly-campaign-the-minard-map/>
+
+-   <https://elartedeldato.com/>
+
+# Bibliografía de utilidad para el lector
+
+-   "Fundamentos de ciencia de datos con R" coordinado por [Gema Fernández-Avilés y José-María Montero](https://blog.uclm.es/gemafaviles/): https://cdr-book.github.io/
+
+-   "Estadística Aplicada a las Ciencias y la Ingeniería" escrito por [Emilio L. Cano](http://emilio.lcano.com/). https://emilopezcano.github.io/estadistica-ciencias-ingenieria/index.html
+
+-   R for Data Science: https://r4ds.hadley.nz/eda
+
+    -   Primera versión en castellano: https://es.r4ds.hadley.nz/
