@@ -1,6 +1,7 @@
 ---
-title: "La importancia de la visualización. Gráficos interactivos en R."
-author: "VII Seminario Análisis de datos avanzado en Ciencias de la Salud"
+title: "La importancia de la visualización.  \nGráficos interactivos en R."
+subtitle: "VII Seminario Análisis de datos avanzado en Ciencias de la Salud"
+author: "Carmen Lancho Martín - DSLAB"
 date: "15 de octubre de 2024"
 
 format: 
