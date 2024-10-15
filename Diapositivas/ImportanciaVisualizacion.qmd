@@ -301,3 +301,15 @@ print(dispersion_plot_sex)
 -   R for Data Science: https://r4ds.hadley.nz/eda
 
     -   Primera versión en castellano: https://es.r4ds.hadley.nz/
+
+# Contacto
+
+\centering
+
+\Large
+
+**carmen.lancho\@urjc.es**
+
+\vspace{1cm}
+
+![](images/DSLab_logo_2.png){fig-align="center" width="100"}
